@@ -1,0 +1,126 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- 禁用横向滚动 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>怪兽记忆翻牌</title>
+    <link rel="stylesheet" href="css/main.css" />
+</head>
+<body onresize="onresize()">
+    <div class="turning2" id="footer">
+        比赛完成
+    </div>
+    <div class="scene turning1" id="scene">
+    </div>
+
+    <div id="Begin" class="demo site">重新开始</div>
+
+    <script type="text/javascript">
+
+        var $ = function (obj) { return document.getElementById(obj); }
+
+        // 图片模型
+      //  var model = [1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+   var model = [1, 2, 3, 4,5,6,1, 2, 3, 4,5,6];
+        // 随机排列
+        function fn() { return Math.random() - Math.random(); }
+
+        model.sort(fn);
+
+        var html = "";
+
+        //插入html描述
+        for (var i = 0, len = model.length; i < len; i++) {
+            var url = "img/" + model[i] + ".jpg"; //图片地址
+            html += '<div class="box" attr=' + model[i] + ' id="box' + i + '"><span class="bg" id="bg' + i + '"></span><img class="img" id="img' + i + '" src=' + url + ' /></div>';
+        }
+
+
+
+        $("scene").innerHTML = html; // 插入显示数据
+
+        //调整图片比例
+        function onresize() {
+            var picbox = document.getElementById("box1");
+            var imgs, bgs;
+            var picbox_w = picbox.offsetWidth;
+            var picbox_h = picbox_w;//在此修改图片比例!
+            // for (var i = 0; i < 18; i++) {
+            
+            for (var i = 0; i < 12; i++) {
+                picbox = document.getElementById("box" + i);
+                picbox.style.height = picbox_h + 'px';
+                imgs = document.getElementById("img" + i);
+                imgs.style.width = picbox_w + 'px';
+                imgs.style.height = picbox_h + 'px';
+                bgs = document.getElementById("bg" + i);
+                bgs.style.width = picbox_w + 'px';
+                bgs.style.height = picbox_h + 'px';
+            }
+        }
+
+        onresize();
+
+
+
+        var cacheObj = null; //缓存数据
+
+        var aBtn = $("scene").getElementsByTagName("div");
+
+        var count = 0;//配对数
+
+        var count_sum = 0;//按键数
+
+        var ding = document.getElementById("dingmusic");//音效
+
+        for (var i = 0, len = aBtn.length; i < len; i++) {
+            aBtn[i].onclick = function () {
+                var self = this;
+                count_sum++;
+                $("Begin").textContent = "重新开始 已点击" + count_sum + "步";
+                if (cacheObj == self) {
+                    return;
+                }
+                self.className = "box hover";
+                if (cacheObj == null)// 判断缓存存在
+                {
+                    cacheObj = self;
+                }
+                else {
+                    if (cacheObj.getAttribute("attr") == self.getAttribute("attr"))// 判断数值 是否相等
+                    {
+                        self.className = cacheObj.className = "box hover";
+                        self.onclick = cacheObj.onclick = null;
+                        cacheObj = null;
+                        count++;
+                    }
+                    else {
+                        setTimeout(function () {
+                            self.className = "box";
+                            if (cacheObj) {
+                                cacheObj.className = "box";
+                            }
+                            cacheObj = null;
+                        }, 300);
+
+                    }
+                }
+                if (count == 9) {
+                    setTimeout(function () {
+                        $("scene").className = "scene turning2";
+                        $("footer").className = "turning1";
+                    }, 300)
+                }
+            }
+
+        }
+        $("Begin").onclick = function () {
+            location.reload();
+        }
+
+    </script>
+
+</body>
+
+</html>
